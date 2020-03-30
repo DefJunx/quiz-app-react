@@ -9,8 +9,8 @@
   "scripts": {
     "start": "node .",
     "dev": "ts-node src/server.ts",
-    "build": "tsc",
-    "lint": "eslint src --ext ts"
+    "build": "npm run lint && tsc",
+    "lint": "eslint -c .eslintrc.json src --ext ts"
   },
   "keywords": [
     "backend",

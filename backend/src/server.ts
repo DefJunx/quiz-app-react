@@ -15,7 +15,7 @@ const app = fastify({
     level: isDev ? "debug" : "info",
   },
 });
-const publicPath = process.env.PUBLIC_PATH || path.join(__dirname, "..", "..", "public");
+const publicPath = process.env.PUBLIC_PATH || path.join(__dirname, "..", "..", "build");
 const { server } = app;
 const io = socketio(server);
 const games = new GameManager();
@@ -291,7 +291,7 @@ io.on("connection", (socket) => {
 });
 
 app.register(fastifyStatic, { root: publicPath, wildcard: false });
-app.get("/*", (req, reply) => {
+app.get("*", (req, reply) => {
   reply.sendFile("index.html");
 });
 app.listen(+port, (err, address) => {

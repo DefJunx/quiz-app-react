@@ -3,14 +3,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const dotenv_1 = __importDefault(require("dotenv"));
 const path_1 = __importDefault(require("path"));
 const fastify_1 = __importDefault(require("fastify"));
 const fastify_static_1 = __importDefault(require("fastify-static"));
 const socket_io_1 = __importDefault(require("socket.io"));
 const validate_1 = require("./utils/validate");
 const gameManager_1 = __importDefault(require("./utils/gameManager"));
-dotenv_1.default.config();
 const port = process.env.PORT || 30010;
 const isDev = process.env.NODE_ENV === "development";
 const app = fastify_1.default({
@@ -19,7 +17,7 @@ const app = fastify_1.default({
         level: isDev ? "debug" : "info",
     },
 });
-const publicPath = process.env.PUBLIC_PATH || path_1.default.join(__dirname, "..", "..", "public");
+const publicPath = process.env.PUBLIC_PATH || path_1.default.join(__dirname, "..", "..", "build");
 const { server } = app;
 const io = socket_io_1.default(server);
 const games = new gameManager_1.default();
@@ -150,6 +148,7 @@ io.on("connection", (socket) => {
         callback({ code: "success" });
     });
     socket.on("queueForAnswer", (payload, callback) => {
+        var _a;
         const playerAnswering = games.getPlayerBySocket(socket.id);
         const game = games.getGameByRoom(payload.roomName);
         if (!game) {
@@ -170,7 +169,7 @@ io.on("connection", (socket) => {
                 success: false,
             });
         }, 10 * 1000); // ten seconds time
-        socket.to(payload.roomName).emit("playerAnswering", { username: playerAnswering === null || playerAnswering === void 0 ? void 0 : playerAnswering.username });
+        socket.to(payload.roomName).emit("playerAnswering", { username: (_a = playerAnswering) === null || _a === void 0 ? void 0 : _a.username });
         callback({ code: "success" });
     });
     socket.on("sendAnswer", (payload, callback) => {
@@ -259,7 +258,7 @@ io.on("connection", (socket) => {
     });
 });
 app.register(fastify_static_1.default, { root: publicPath, wildcard: false });
-app.get("/*", (req, reply) => {
+app.get("*", (req, reply) => {
     reply.sendFile("index.html");
 });
 app.listen(+port, (err, address) => {

@@ -1,4 +1,3 @@
-import dotenv from "dotenv";
 import path from "path";
 
 import fastify from "fastify";
@@ -7,8 +6,6 @@ import socketio from "socket.io";
 
 import { isValidString } from "./utils/validate";
 import GameManager from "./utils/gameManager";
-
-dotenv.config();
 
 const port = process.env.PORT || 30010;
 const isDev = process.env.NODE_ENV === "development";

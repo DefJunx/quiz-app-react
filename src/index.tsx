@@ -16,7 +16,7 @@ import { Player } from "./models/player";
 import "./styles/app.scss";
 
 const store = configureStore();
-export const socket = io();
+export const socket = process.env.NODE_ENV === "development" ? io("localhost:30010") : io();
 
 socket.on("PLAYER-CONNECTED", (player: Player) => {
   store.dispatch(addPlayer(player));

@@ -1,0 +1,54 @@
+@charset "utf-8";
+
+// Set custom variables for Bulma
+$primary: #10bccd;
+$family-sans-serif: "Roboto", sans-serif;
+$body-background-color: #2b2b2b;
+$default-radius: 6px;
+
+@import "~bulma/sass/utilities/_all.sass";
+@import "~bulma/sass/base/_all.sass";
+@import "~bulma/sass/form/_all.sass";
+
+@import "~bulma/sass/components/navbar.sass";
+@import "~bulma/sass/elements/box.sass";
+@import "~bulma/sass/elements/button.sass";
+
+:root {
+  font-size: 16px;
+  height: 100%;
+}
+
+h1 {
+  font-size: 2rem;
+}
+h2 {
+  font-size: 1.5rem;
+}
+
+.page {
+  width: 80vw;
+  height: 80vh;
+  margin: auto;
+  margin-top: 150px;
+
+  &__button-group {
+    text-align: center;
+
+    & > button {
+      margin-right: 2rem;
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+  }
+}
+
+.form__error {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  border: 1px solid red;
+  color: red;
+  background: #ffc4c4;
+  border-radius: $default-radius;
+}

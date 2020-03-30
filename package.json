@@ -26,8 +26,6 @@
     "typescript": "~3.7.2"
   },
   "scripts": {
-    "prestart": "tsc -p backend/tsconfig.json",
-    "heroku-postbuild": "tsc -p backend/tsconfig.json",
     "start": "node backend/src/server.js",
     "dev": "react-scripts start",
     "build": "react-scripts build",

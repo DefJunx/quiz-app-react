@@ -148,7 +148,6 @@ io.on("connection", (socket) => {
         callback({ code: "success" });
     });
     socket.on("queueForAnswer", (payload, callback) => {
-        var _a;
         const playerAnswering = games.getPlayerBySocket(socket.id);
         const game = games.getGameByRoom(payload.roomName);
         if (!game) {
@@ -169,7 +168,7 @@ io.on("connection", (socket) => {
                 success: false,
             });
         }, 10 * 1000); // ten seconds time
-        socket.to(payload.roomName).emit("playerAnswering", { username: (_a = playerAnswering) === null || _a === void 0 ? void 0 : _a.username });
+        socket.to(payload.roomName).emit("playerAnswering", { username: playerAnswering === null || playerAnswering === void 0 ? void 0 : playerAnswering.username });
         callback({ code: "success" });
     });
     socket.on("sendAnswer", (payload, callback) => {

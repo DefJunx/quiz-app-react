@@ -8,7 +8,8 @@
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "node",
     "module": "CommonJS",
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "outDir": "build"
   },
   "include": ["src"]
 }

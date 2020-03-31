@@ -9,13 +9,17 @@ import GameManager from "./utils/gameManager";
 
 const port = process.env.PORT || 30010;
 const isDev = process.env.NODE_ENV === "development";
+
 const app = fastify({
   logger: {
     prettyPrint: isDev,
     level: isDev ? "debug" : "info",
   },
 });
-const publicPath = process.env.PUBLIC_PATH || path.join(__dirname, "..", "..", "build");
+
+const publicPath = path.join(__dirname, "..", "..", "build");
+app.register(fastifyStatic, { root: publicPath });
+
 const { server } = app;
 const io = socketio(server);
 const games = new GameManager();
@@ -290,10 +294,9 @@ io.on("connection", (socket) => {
   });
 });
 
-app.register(fastifyStatic, { root: publicPath, wildcard: false });
-app.get("*", (req, reply) => {
-  reply.sendFile("index.html");
-});
+// app.get("*", (req, reply) => {
+//   reply.sendFile("index.html");
+// });
 app.listen(+port, (err, address) => {
   if (err) throw err;
 

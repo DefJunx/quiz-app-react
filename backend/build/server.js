@@ -260,7 +260,7 @@ io.on("connection", (socket) => {
 // app.get("*", (req, reply) => {
 //   reply.sendFile("index.html");
 // });
-app.listen(+port, (err, address) => {
+app.listen(+port, "0.0.0.0", (err, address) => {
     if (err)
         throw err;
     app.log.info(`Running on ${address}`);

@@ -18,7 +18,7 @@ const app = fastify_1.default({
     },
 });
 const publicPath = path_1.default.join(__dirname, "..", "..", "build");
-app.register(fastify_static_1.default, { root: publicPath });
+app.register(fastify_static_1.default, { root: publicPath, wildcard: false });
 const { server } = app;
 const io = socket_io_1.default(server);
 const games = new gameManager_1.default();
@@ -257,9 +257,9 @@ io.on("connection", (socket) => {
         }
     });
 });
-// app.get("*", (req, reply) => {
-//   reply.sendFile("index.html");
-// });
+app.get("*", (req, reply) => {
+    reply.sendFile("index.html");
+});
 app.listen(+port, "0.0.0.0", (err, address) => {
     if (err)
         throw err;

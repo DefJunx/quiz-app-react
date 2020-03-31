@@ -18,7 +18,7 @@ const app = fastify({
 });
 
 const publicPath = path.join(__dirname, "..", "..", "build");
-app.register(fastifyStatic, { root: publicPath });
+app.register(fastifyStatic, { root: publicPath, wildcard: false });
 
 const { server } = app;
 const io = socketio(server);
@@ -294,9 +294,9 @@ io.on("connection", (socket) => {
   });
 });
 
-// app.get("*", (req, reply) => {
-//   reply.sendFile("index.html");
-// });
+app.get("*", (req, reply) => {
+  reply.sendFile("index.html");
+});
 app.listen(+port, "0.0.0.0", (err, address) => {
   if (err) throw err;
 

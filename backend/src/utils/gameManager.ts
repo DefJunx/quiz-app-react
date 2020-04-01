@@ -12,7 +12,7 @@ export default class GameManager {
       active: false,
       currentQuestion: null,
       answerTimeout: null,
-      playersThatCanStillAnswer: 0,
+      playersThatCanStillAnswer: 0
     };
 
     this.games.push(game);
@@ -25,7 +25,7 @@ export default class GameManager {
       username,
       id,
       room,
-      score: 0,
+      score: 0
     };
 
     this.players.push(player);
@@ -34,10 +34,10 @@ export default class GameManager {
   }
 
   removeGame(id: string): Game | undefined {
-    const game = this.games.find((g) => g.host === id);
+    const game = this.games.find(g => g.host === id);
 
     if (game) {
-      this.games = this.games.filter((game) => {
+      this.games = this.games.filter(game => {
         return game.host !== id;
       });
     }
@@ -46,10 +46,10 @@ export default class GameManager {
   }
 
   removePlayer(socketID: string): Player | undefined {
-    const player = this.players.find((p) => p.id === socketID);
+    const player = this.players.find(p => p.id === socketID);
 
     if (player) {
-      this.players = this.players.filter((player) => {
+      this.players = this.players.filter(player => {
         return player.id !== socketID;
       });
     }
@@ -60,7 +60,7 @@ export default class GameManager {
   removeFromRoom(room: string): Player[] {
     const removedPlayers: Player[] = [];
 
-    this.players = this.players.filter((player) => {
+    this.players = this.players.filter(player => {
       if (player.room === room) {
         removedPlayers.push(player);
       } else {
@@ -73,7 +73,7 @@ export default class GameManager {
 
   getFromRoom(room: string): Player[] {
     return (
-      this.players.filter((player) => {
+      this.players.filter(player => {
         return player.room === room;
       }) || []
     );
@@ -88,7 +88,7 @@ export default class GameManager {
   }
 
   updateScore(socket: string, points: number): Player | undefined {
-    const player = this.players.find((p) => p.id === socket);
+    const player = this.players.find(p => p.id === socket);
 
     if (player) {
       player.score += points;
@@ -98,7 +98,7 @@ export default class GameManager {
   }
 
   getGameByHost(hostID: string): Game | undefined {
-    const game = this.games.find((game) => {
+    const game = this.games.find(game => {
       return game.host === hostID;
     });
 
@@ -106,7 +106,7 @@ export default class GameManager {
   }
 
   getGameByRoom(roomName: string): Game | undefined {
-    const game = this.games.find((game) => {
+    const game = this.games.find(game => {
       return game.room === roomName;
     });
 
@@ -114,7 +114,7 @@ export default class GameManager {
   }
 
   getPlayerBySocket(socketID: string): Player | undefined {
-    const player = this.players.find((player) => {
+    const player = this.players.find(player => {
       return player.id === socketID;
     });
 
@@ -125,7 +125,7 @@ export default class GameManager {
     const players = this.getFromRoom(room);
     let available = true;
 
-    players.some((player) => {
+    players.some(player => {
       if (player.username === username) {
         available = false;
         return false;

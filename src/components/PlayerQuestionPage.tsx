@@ -36,6 +36,8 @@ const PlayerQuestionPage: React.FC<PlayerQuestionPageProps> = (props) => {
 
   const [pageState, setPageState] = useState({ ...defaultPageState });
 
+  // TODO: Notificare che è finita la partita? Poveracci
+
   useEffect(() => {
     socket.on("proceedGame", () => {
       setPageState({ ...defaultPageState });

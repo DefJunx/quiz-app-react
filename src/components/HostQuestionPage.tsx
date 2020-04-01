@@ -29,7 +29,7 @@ const HostQuestionPage: React.FC<HostQuestionPageProps> = (props) => {
   const defaultPageState = {
     waitingPlayers: false,
     question: "",
-    answers: [defaultAnswer],
+    answers: [{ ...defaultAnswer, isCorrectAnswer: true }, defaultAnswer],
     error: "",
   };
 
@@ -72,13 +72,13 @@ const HostQuestionPage: React.FC<HostQuestionPageProps> = (props) => {
     });
   };
 
-  const handleCheckboxChange = (e: ChangeEvent<HTMLInputElement>, answerIndex: number) => {
+  const handleRadioChange = (e: ChangeEvent<HTMLInputElement>) => {
     const answers: Answer[] = pageState.answers.map((answer, idx) => {
-      if (idx === answerIndex) {
-        return { ...answer, isCorrectAnswer: !answer.isCorrectAnswer };
+      if (idx === +e.target.value) {
+        return { ...answer, isCorrectAnswer: true };
       }
 
-      return answer;
+      return { ...answer, isCorrectAnswer: false };
     });
 
     setPageState({
@@ -176,12 +176,15 @@ const HostQuestionPage: React.FC<HostQuestionPageProps> = (props) => {
                       />
                     </div>
                   </div>
+                  {/* TODO: Change with radio button! */}
                   <div className="field">
-                    <label className="checkbox">
+                    <label className="radio">
                       <input
-                        type="checkbox"
-                        checked={answer.isCorrectAnswer}
-                        onChange={(e) => handleCheckboxChange(e, idx)}
+                        type="radio"
+                        name="correctAnswer"
+                        value={idx}
+                        checked={idx === 0}
+                        onChange={handleRadioChange}
                       />
                       Correct answer
                     </label>

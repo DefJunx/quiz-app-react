@@ -15,11 +15,10 @@ import PlayerQuestionPage from "./PlayerQuestionPage";
 import { GAME_STATUSES } from "../reducers/game";
 
 const mapStateToProps = (state: any) => ({
-  question: state.game.question,
   type: state.type,
   players: state.players,
-  message: state.game.message,
   status: state.game.status,
+  room: state.game.room,
   scoreboard: state.game.scoreboard,
 });
 const mapDispatchToProps = (dispatch: any) => ({
@@ -37,26 +36,37 @@ type QuestionPageProps = ConnectedProps<typeof connector> & {
 };
 
 const QuestionPage: React.FC<QuestionPageProps> = (props) => {
-  const { scoreboard, setScoreboard } = props;
+  const { scoreboard, setScoreboard, setStatus } = props;
+
+  useEffect(() => {
+    socket.on("gameEnd", () => {
+      setStatus(GAME_STATUSES.FINISHED);
+    });
+  }, [setStatus]);
+
+  useEffect(() => {
+    socket.on("updateScores", (payload: any) => {
+      setScoreboard([...payload.scores]);
+    });
+  }, [setScoreboard]);
 
   useEffect(() => {
     socket.on("updateScoreboard", (payload: any) => {
       const currentScores = [...(scoreboard as Player[])];
+      const scores = currentScores.map((player) => {
+        if (player.name === payload.playerName) {
+          return {
+            ...player,
+            score: player.score + 1,
+          };
+        }
 
-      setScoreboard(
-        currentScores.map((player) => {
-          if (player.name === payload.playerName) {
-            return {
-              ...player,
-              score: player.score + 1,
-            };
-          }
+        return player;
+      });
 
-          return player;
-        })
-      );
+      // setScoreboard();
 
-      socket.emit("scoreboardUpdated", undefined, (res: any) => {
+      socket.emit("scoreboardUpdated", { scores }, (res: any) => {
         if (res.code === "success") {
           return;
         }
@@ -64,7 +74,7 @@ const QuestionPage: React.FC<QuestionPageProps> = (props) => {
         console.log("Errore scoreboardUpdated:", res);
       });
     });
-  }, [scoreboard, setScoreboard]);
+  }, [scoreboard]);
 
   const handleReset = () => {
     socket.disconnect();
@@ -76,7 +86,13 @@ const QuestionPage: React.FC<QuestionPageProps> = (props) => {
   };
 
   const endGame = () => {
-    props.setStatus(GAME_STATUSES.FINISHED);
+    socket.emit("gameEnded", { room: props.room }, (res: any) => {
+      if (res.code === "success") {
+        return;
+      }
+
+      console.log("Error gameEnded emit");
+    });
   };
 
   const getWinner = () =>

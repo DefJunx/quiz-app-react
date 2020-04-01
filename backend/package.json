@@ -9,7 +9,7 @@
   "scripts": {
     "start": "node .",
     "dev": "nodemon",
-    "build": "npm run lint && tsc &6 echo \"Backend built successfully\"",
+    "build": "npm run lint && tsc && echo \"Backend built successfully\"",
     "lint": "eslint -c .eslintrc.json src --ext ts"
   },
   "keywords": [

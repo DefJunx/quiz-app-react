@@ -206,7 +206,7 @@ const HostQuestionPage: React.FC<HostQuestionPageProps> = props => {
                         type="radio"
                         name="correctAnswer"
                         value={idx}
-                        checked={idx === 0}
+                        defaultChecked={idx === 0}
                         onChange={handleRadioChange}
                       />
                       Correct answer

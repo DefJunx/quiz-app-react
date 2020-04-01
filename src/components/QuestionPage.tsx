@@ -85,16 +85,6 @@ const QuestionPage: React.FC<QuestionPageProps> = (props) => {
     props.history.push("/");
   };
 
-  const endGame = () => {
-    socket.emit("gameEnded", { room: props.room }, (res: any) => {
-      if (res.code === "success") {
-        return;
-      }
-
-      console.log("Error gameEnded emit");
-    });
-  };
-
   const getWinner = () =>
     (props.scoreboard as Player[]).reduce((max: Player, player: Player) => (max.score > player.score ? max : player), {
       name: "",
@@ -108,16 +98,6 @@ const QuestionPage: React.FC<QuestionPageProps> = (props) => {
         {props.status === "active" ? (
           <>
             <h1 className="has-text-centered">Game on</h1>
-            {props.type === CLIENT_TYPES.HOST && (
-              <button
-                style={{ marginBottom: "40px" }}
-                className="button is-primary"
-                type="button"
-                onClick={(e) => endGame()}
-              >
-                End Game
-              </button>
-            )}
             {props.type === CLIENT_TYPES.HOST ? <HostQuestionPage /> : <PlayerQuestionPage />}
           </>
         ) : (

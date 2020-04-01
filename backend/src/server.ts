@@ -221,7 +221,7 @@ io.on("connection", (socket) => {
     if (isCorrectAnswer) {
       setTimeout(() => {
         io.to(game.host).emit("updateScoreboard", { playerName });
-      }, 5 * 1000);
+      }, 3 * 1000);
       answerResultPayload.success = true;
     } else {
       answerResultPayload.status = "Wrong answer!";

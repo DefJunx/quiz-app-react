@@ -8,6 +8,7 @@ import { socket } from "..";
 const mapStateToProps = (state: any) => ({
   type: state.type,
   status: state.game.status,
+  room: state.game.room,
 });
 const mapDispatchToProps = (dispatch: any) => ({
   setStatus: (status: GAME_STATUSES) => dispatch(setStatus(status)),
@@ -94,6 +95,16 @@ const HostQuestionPage: React.FC<HostQuestionPageProps> = (props) => {
     setPageState({ ...pageState, answers });
   };
 
+  const endGame = () => {
+    socket.emit("gameEnded", { room: props.room }, (res: any) => {
+      if (res.code === "success") {
+        return;
+      }
+
+      console.log("Error gameEnded emit");
+    });
+  };
+
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
 
@@ -153,6 +164,14 @@ const HostQuestionPage: React.FC<HostQuestionPageProps> = (props) => {
         <h2>Waiting for players to answer...</h2>
       ) : (
         <>
+          <button
+            style={{ marginBottom: "40px" }}
+            className="button is-primary"
+            type="button"
+            onClick={(e) => endGame()}
+          >
+            End Game
+          </button>
           <h2 className="has-text-centered">Ask a question!</h2>
           <form onSubmit={onSubmit}>
             {pageState.error !== "" && <p className="form__error">Error: {pageState.error}</p>}

@@ -10,7 +10,6 @@ $default-radius: 6px;
 @import "~bulma/sass/base/_all.sass";
 @import "~bulma/sass/form/_all.sass";
 
-@import "~bulma/sass/components/navbar.sass";
 @import "~bulma/sass/elements/box.sass";
 @import "~bulma/sass/elements/button.sass";
 
@@ -24,6 +23,21 @@ h1 {
 }
 h2 {
   font-size: 1.5rem;
+}
+
+.header {
+  height: 4rem;
+  background-color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .logo {
+    font-size: 2rem;
+    font-family: "Permanent Marker", cursive;
+    color: $primary;
+    cursor: pointer;
+  }
 }
 
 .page {

@@ -1,5 +1,5 @@
 import React from "react";
-import { Router, Switch, Route } from "react-router-dom";
+import { Router, Switch } from "react-router-dom";
 import { createBrowserHistory } from "history";
 
 import RenderWithHeader from "./RenderWithHeader";
@@ -16,7 +16,7 @@ export const history = createBrowserHistory();
 const AppRouter = () => (
   <Router history={history}>
     <Switch>
-      <Route exact path="/" component={DashboardPage} />
+      <RenderWithHeader exact path="/" history={history} component={DashboardPage} />
       <RenderWithHeader path="/create" history={history} component={CreateGamePage} />
       <RenderWithHeader path="/join" history={history} component={JoinGamePage} />
       <RenderWithHeader path="/lobby" history={history} component={LobbyPage} />

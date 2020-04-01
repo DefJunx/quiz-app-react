@@ -5,16 +5,17 @@ import Header from "../components/Header";
 
 interface RenderWithHeaderProps {
   path?: string;
+  exact?: boolean;
   component: any;
-  history: any;
+  history?: any;
 }
 
-const RenderWithHeader: React.FC<RenderWithHeaderProps> = props => {
+const RenderWithHeader: React.FC<RenderWithHeaderProps> = (props) => {
   const { component, ...rest } = props;
   return (
     <Route
       {...rest}
-      render={props => (
+      render={(props) => (
         <>
           <Header history={props.history} />
           {React.createElement(component, props)}

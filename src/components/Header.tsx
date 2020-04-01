@@ -10,18 +10,19 @@ import { History } from "history";
 const mapDispatchToProps = (dispatch: any) => ({
   resetPlayers: () => dispatch(resetPlayers()),
   resetType: () => dispatch(resetType()),
-  resetGame: () => dispatch(resetGame())
+  resetGame: () => dispatch(resetGame()),
 });
-const connector = connect(
-  undefined,
-  mapDispatchToProps
-);
+const connector = connect(undefined, mapDispatchToProps);
 type HeaderProps = ConnectedProps<typeof connector> & {
   history: History;
 };
 
-const Header: React.FC<HeaderProps> = props => {
+const Header: React.FC<HeaderProps> = (props) => {
   const goToHome = () => {
+    if (props.history.location.pathname === "/") {
+      return;
+    }
+
     socket.disconnect();
     socket.connect();
 
@@ -34,17 +35,9 @@ const Header: React.FC<HeaderProps> = props => {
   return (
     <header className="header">
       <div className="header__content">
-        <nav className="navbar">
-          <div id="navbarMenu" className="navbar-menu">
-            <div className="navbar-start">
-              <div className="navbar-item">
-                <button type="button" className="button is-text" onClick={goToHome}>
-                  Home
-                </button>
-              </div>
-            </div>
-          </div>
-        </nav>
+        <div className="logo" onClick={goToHome}>
+          Quizzler
+        </div>
       </div>
     </header>
   );

@@ -158,17 +158,16 @@ io.on("connection", (socket) => {
         game.answerTimeout = setTimeout(() => {
             --game.playersThatCanStillAnswer;
             app.log.debug("playersThatCanStillAnswer:", game.playersThatCanStillAnswer);
-            if (game.playersThatCanStillAnswer === 0) {
-                io.to(game.room).emit("nooneAnswered");
-                game.answerTimeout = null;
-                return;
-            }
             io.to(payload.roomName).emit("answerResult", {
                 playerId: socket.id,
                 status: "Time's up! you can't answer anymore.",
                 success: false,
             });
-        }, 10 * 1000); // ten seconds time
+            if (game.playersThatCanStillAnswer === 0) {
+                io.to(game.room).emit("nooneAnswered");
+                game.answerTimeout = null;
+            }
+        }, 2 * 1000); // ten seconds time
         socket.to(payload.roomName).emit("playerAnswering", { username: playerAnswering === null || playerAnswering === void 0 ? void 0 : playerAnswering.username });
         callback({ code: "success" });
     });
@@ -194,21 +193,32 @@ io.on("connection", (socket) => {
         if (isCorrectAnswer) {
             setTimeout(() => {
                 io.to(game.host).emit("updateScoreboard", { playerName });
-            }, 5 * 1000);
+            }, 3 * 1000);
             answerResultPayload.success = true;
         }
         else {
             answerResultPayload.status = "Wrong answer!";
+            game.playersThatCanStillAnswer--;
         }
         io.to(payload.roomName).emit("answerResult", answerResultPayload);
+        if (game.playersThatCanStillAnswer === 0) {
+            io.to(game.room).emit("nooneAnswered");
+        }
     });
-    socket.on("scoreboardUpdated", (_, callback) => {
+    socket.on("scoreboardUpdated", (payload, callback) => {
         const game = games.getGameByHost(socket.id);
         if (!game) {
             callback({ code: "INTERNALERROR" });
             return;
         }
+        io.to(game.room).emit("updateScores", payload);
         io.to(game.room).emit("proceedGame");
+        callback({
+            code: "success",
+        });
+    });
+    socket.on("gameEnded", (payload, callback) => {
+        io.to(payload.room).emit("gameEnd");
         callback({
             code: "success",
         });

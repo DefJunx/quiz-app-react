@@ -10,14 +10,17 @@ import { History } from "history";
 const mapDispatchToProps = (dispatch: any) => ({
   resetPlayers: () => dispatch(resetPlayers()),
   resetType: () => dispatch(resetType()),
-  resetGame: () => dispatch(resetGame()),
+  resetGame: () => dispatch(resetGame())
 });
-const connector = connect(undefined, mapDispatchToProps);
+const connector = connect(
+  undefined,
+  mapDispatchToProps
+);
 type HeaderProps = ConnectedProps<typeof connector> & {
   history: History;
 };
 
-const Header: React.FC<HeaderProps> = (props) => {
+const Header: React.FC<HeaderProps> = props => {
   const goToHome = () => {
     socket.disconnect();
     socket.connect();

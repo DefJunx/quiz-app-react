@@ -12,7 +12,7 @@ export default () => {
     combineReducers({
       players: playersReducer,
       type: clientTypeReducer,
-      game: gameReducer,
+      game: gameReducer
     }),
     composeEnchancers(applyMiddleware(thunk))
   );

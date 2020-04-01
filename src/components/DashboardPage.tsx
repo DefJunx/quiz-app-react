@@ -7,15 +7,18 @@ import { History } from "history";
 const mapDispatchToProps = (dispatch: any) => {
   return {
     setHost: () => dispatch(setHost()),
-    setPlayer: () => dispatch(setPlayer()),
+    setPlayer: () => dispatch(setPlayer())
   };
 };
-const connector = connect(undefined, mapDispatchToProps);
+const connector = connect(
+  undefined,
+  mapDispatchToProps
+);
 type DashboardPageProps = ConnectedProps<typeof connector> & {
   history: History;
 };
 
-const DashboardPage: React.FC<DashboardPageProps> = (props) => {
+const DashboardPage: React.FC<DashboardPageProps> = props => {
   const startAsHost = () => {
     props.setHost();
     props.history.push("/create");

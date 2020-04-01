@@ -1,11 +1,11 @@
 export const setHost = () => ({
-  type: "SET_HOST",
+  type: "SET_HOST"
 });
 
 export const setPlayer = () => ({
-  type: "SET_PLAYER",
+  type: "SET_PLAYER"
 });
 
 export const resetType = () => ({
-  type: "RESET_TYPE",
+  type: "RESET_TYPE"
 });

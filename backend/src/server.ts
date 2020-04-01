@@ -13,8 +13,8 @@ const isDev = process.env.NODE_ENV === "development";
 const app = fastify({
   logger: {
     prettyPrint: isDev,
-    level: isDev ? "debug" : "info",
-  },
+    level: isDev ? "debug" : "info"
+  }
 });
 
 const publicPath = path.join(__dirname, "..", "..", "build");
@@ -27,7 +27,7 @@ const games = new GameManager();
 app.log.debug("process.env", process.env);
 app.log.debug("publicPath", publicPath);
 
-io.on("connection", (socket) => {
+io.on("connection", socket => {
   app.log.info(`${socket.id} connected!`);
 
   socket.on("msg", () => {
@@ -44,13 +44,13 @@ io.on("connection", (socket) => {
       } else {
         callback({
           code: "ROOMERROR",
-          msg: `Room name ${config.room} is taken. Please try another name.`,
+          msg: `Room name ${config.room} is taken. Please try another name.`
         });
       }
     } else {
       callback({
         code: "ROOMERROR",
-        msg: `Cannot use empty string for room name.`,
+        msg: `Cannot use empty string for room name.`
       });
     }
   });
@@ -61,7 +61,7 @@ io.on("connection", (socket) => {
       if (g && g.active) {
         return callback({
           code: "NAMEERROR",
-          msg: `Cannot join room ${config.name}. Game has already started.`,
+          msg: `Cannot join room ${config.name}. Game has already started.`
         });
       }
 
@@ -82,19 +82,19 @@ io.on("connection", (socket) => {
         } else {
           callback({
             code: "NAMEERROR",
-            msg: `${config.name} is already being used in room: ${config.room}`,
+            msg: `${config.name} is already being used in room: ${config.room}`
           });
         }
       } else {
         callback({
           code: "NAMEERROR",
-          msg: "Room does not exist!",
+          msg: "Room does not exist!"
         });
       }
     } else {
       callback({
         code: "NAMEERROR",
-        msg: `Please enter both the room name and username.`,
+        msg: `Please enter both the room name and username.`
       });
     }
   });
@@ -112,12 +112,12 @@ io.on("connection", (socket) => {
 
       if (players.length > 0) {
         game.active = true;
-        players.forEach((p) => io.to(p.id).emit("gameStarted"));
+        players.forEach(p => io.to(p.id).emit("gameStarted"));
         callback({ code: "success" });
       } else {
         callback({
           code: "STARTERROR",
-          msg: "Not enough players to start the game.",
+          msg: "Not enough players to start the game."
         });
       }
     } else {
@@ -140,9 +140,9 @@ io.on("connection", (socket) => {
       answers: answers.map((ans: any) => {
         return {
           ...ans,
-          answerId: `${Math.round(Date.now())}-${Math.floor(Math.random() * 1000 + 1)}`,
+          answerId: `${Math.round(Date.now())}-${Math.floor(Math.random() * 1000 + 1)}`
         };
-      }),
+      })
     };
 
     app.log.debug("Question: ", question);
@@ -154,7 +154,7 @@ io.on("connection", (socket) => {
       // eslint-disable-next-line no-unused-vars
       const { isCorrectAnswer, ...toReturn } = ans;
       return {
-        ...toReturn,
+        ...toReturn
       };
     });
 
@@ -181,7 +181,7 @@ io.on("connection", (socket) => {
       io.to(payload.roomName).emit("answerResult", {
         playerId: socket.id,
         status: "Time's up! you can't answer anymore.",
-        success: false,
+        success: false
       });
 
       if (game.playersThatCanStillAnswer === 0) {
@@ -215,7 +215,7 @@ io.on("connection", (socket) => {
       playerId: socket.id,
       playerName,
       status: "",
-      success: false,
+      success: false
     };
 
     if (isCorrectAnswer) {
@@ -246,14 +246,14 @@ io.on("connection", (socket) => {
     io.to(game.room).emit("updateScores", payload);
     io.to(game.room).emit("proceedGame");
     callback({
-      code: "success",
+      code: "success"
     });
   });
 
   socket.on("gameEnded", (payload, callback) => {
     io.to(payload.room).emit("gameEnd");
     callback({
-      code: "success",
+      code: "success"
     });
   });
 
@@ -270,7 +270,7 @@ io.on("connection", (socket) => {
       }
 
       const players = games.removeFromRoom(game.room);
-      players.forEach((player) => {
+      players.forEach(player => {
         io.to(player.id).emit("HOST-DISCONNECT");
       });
     } else if (type === "PLAYER") {

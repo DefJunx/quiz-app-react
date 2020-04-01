@@ -2,7 +2,7 @@ const defaultType = "";
 
 export enum CLIENT_TYPES {
   HOST = "HOST",
-  PLAYER = "PLAYER",
+  PLAYER = "PLAYER"
 }
 
 export default (state = defaultType, action: { type: string }) => {

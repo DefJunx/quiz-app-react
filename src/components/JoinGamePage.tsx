@@ -7,21 +7,24 @@ import { socket } from "../index";
 import { History } from "history";
 
 const mapStateToProps = (state: { type: string }) => ({
-  type: state.type,
+  type: state.type
 });
 const mapDispatchToProps = (dispatch: any) => ({
-  setRoom: (room: string) => dispatch(setRoom(room)),
+  setRoom: (room: string) => dispatch(setRoom(room))
 });
-const connector = connect(mapStateToProps, mapDispatchToProps);
+const connector = connect(
+  mapStateToProps,
+  mapDispatchToProps
+);
 type JoinGamePageProps = ConnectedProps<typeof connector> & {
   history: History;
 };
 
-const JoinGamePage: React.FC<JoinGamePageProps> = (props) => {
+const JoinGamePage: React.FC<JoinGamePageProps> = props => {
   const [pageState, setPageState] = useState({
     room: "",
     name: "",
-    error: "",
+    error: ""
   });
 
   const onRoomChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -44,7 +47,7 @@ const JoinGamePage: React.FC<JoinGamePageProps> = (props) => {
 
     const config = {
       name: pageState.name,
-      room: pageState.room,
+      room: pageState.room
     };
 
     socket.emit("joinRoom", config, (res: any) => {

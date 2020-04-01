@@ -3,7 +3,7 @@ export const defaultGame = {
   question: {},
   message: "",
   status: "",
-  scoreboard: [],
+  scoreboard: []
 };
 
 export interface GameAction {
@@ -17,7 +17,7 @@ export interface GameAction {
 
 export enum GAME_STATUSES {
   ACTIVE = "active",
-  FINISHED = "finished",
+  FINISHED = "finished"
 }
 
 export default (state = defaultGame, action: GameAction) => {
@@ -25,32 +25,32 @@ export default (state = defaultGame, action: GameAction) => {
     case "SET_ROOM":
       return {
         ...state,
-        room: action.room,
+        room: action.room
       };
     case "RESET_ROOM":
       return {
         ...state,
-        room: "",
+        room: ""
       };
     case "SET_QUESTION":
       return {
         ...state,
-        question: action.question,
+        question: action.question
       };
     case "SET_MESSAGE":
       return {
         ...state,
-        message: action.message,
+        message: action.message
       };
     case "SET_STATUS":
       return {
         ...state,
-        status: action.status,
+        status: action.status
       };
     case "SET_SCOREBOARD":
       return {
         ...state,
-        scoreboard: action.scoreboard,
+        scoreboard: action.scoreboard
       };
     case "RESET_GAME":
       return defaultGame;

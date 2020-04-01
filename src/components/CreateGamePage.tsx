@@ -7,28 +7,31 @@ import { setRoom } from "../actions/game";
 import { History } from "history";
 
 const mapStateToProps = (state: { type: string }) => ({
-  type: state.type,
+  type: state.type
 });
 const mapDispatchToProps = (dispatch: any) => ({
-  setRoom: (room: string) => dispatch(setRoom(room)),
+  setRoom: (room: string) => dispatch(setRoom(room))
 });
-const connector = connect(mapStateToProps, mapDispatchToProps);
+const connector = connect(
+  mapStateToProps,
+  mapDispatchToProps
+);
 type CreateGamePageProps = ConnectedProps<typeof connector> & {
   history: History;
 };
 
-const CreateGamePage: React.FC<CreateGamePageProps> = (props) => {
+const CreateGamePage: React.FC<CreateGamePageProps> = props => {
   const [pageState, setPageState] = useState({
     room: "",
     error: "",
-    background: "",
+    background: ""
   });
 
   const onRoomChange = (e: ChangeEvent<HTMLInputElement>) => {
     const room = e.target.value;
     setPageState({
       ...pageState,
-      room,
+      room
     });
   };
 
@@ -40,7 +43,7 @@ const CreateGamePage: React.FC<CreateGamePageProps> = (props) => {
     }
 
     const config = {
-      room: pageState.room,
+      room: pageState.room
     };
 
     socket.emit("createRoom", config, (res: any) => {

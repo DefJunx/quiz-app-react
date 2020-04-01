@@ -12,16 +12,19 @@ import { GAME_STATUSES } from "../reducers/game";
 const mapStateToProps = (state: { type: string; players: Player[]; game: Game }) => ({
   type: state.type,
   players: state.players,
-  room: state.game.room,
+  room: state.game.room
 });
 const mapDispatchToProps = (dispatch: any) => ({
   setStatus: (status: GAME_STATUSES) => dispatch(setStatus(status)),
-  setScoreboard: (scoreboard: Player[]) => dispatch(setScoreboard(scoreboard)),
+  setScoreboard: (scoreboard: Player[]) => dispatch(setScoreboard(scoreboard))
 });
-const connector = connect(mapStateToProps, mapDispatchToProps);
+const connector = connect(
+  mapStateToProps,
+  mapDispatchToProps
+);
 type LobbyPageProps = ConnectedProps<typeof connector>;
 
-const LobbyPage: React.FC<LobbyPageProps> = (props) => {
+const LobbyPage: React.FC<LobbyPageProps> = props => {
   socket.on("gameStarted", () => {
     if (props.type === CLIENT_TYPES.PLAYER) {
       props.setStatus(GAME_STATUSES.ACTIVE);

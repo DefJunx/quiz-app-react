@@ -15,17 +15,17 @@ export default (state = defaultPlayersState, action: PlayerAction) => {
     case "ADD_PLAYER":
       return [...state, action.player];
     case "REMOVE_PLAYER":
-      return state.filter((player) => player.name !== action.name);
+      return state.filter(player => player.name !== action.name);
     case "RESET_PLAYERS":
       return defaultPlayersState;
     case "SET_PLAYERS":
       return action.players;
     case "SET_SCORE":
-      return state.map((player) => {
+      return state.map(player => {
         if (player.name === action.name) {
           return {
             ...player,
-            score: action.score,
+            score: action.score
           };
         }
 

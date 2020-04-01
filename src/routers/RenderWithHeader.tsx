@@ -9,12 +9,12 @@ interface RenderWithHeaderProps {
   history: any;
 }
 
-const RenderWithHeader: React.FC<RenderWithHeaderProps> = (props) => {
+const RenderWithHeader: React.FC<RenderWithHeaderProps> = props => {
   const { component, ...rest } = props;
   return (
     <Route
       {...rest}
-      render={(props) => (
+      render={props => (
         <>
           <Header history={props.history} />
           {React.createElement(component, props)}

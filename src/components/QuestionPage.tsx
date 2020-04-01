@@ -19,7 +19,7 @@ const mapStateToProps = (state: any) => ({
   players: state.players,
   status: state.game.status,
   room: state.game.room,
-  scoreboard: state.game.scoreboard,
+  scoreboard: state.game.scoreboard
 });
 const mapDispatchToProps = (dispatch: any) => ({
   setMessage: (msg: string) => dispatch(setMessage(msg)),
@@ -27,54 +27,66 @@ const mapDispatchToProps = (dispatch: any) => ({
   setScoreboard: (scoreboard: any) => dispatch(setScoreboard(scoreboard)),
   resetPlayers: () => dispatch(resetPlayers()),
   resetType: () => dispatch(resetType()),
-  resetGame: () => dispatch(resetGame()),
+  resetGame: () => dispatch(resetGame())
 });
-const connector = connect(mapStateToProps, mapDispatchToProps);
+const connector = connect(
+  mapStateToProps,
+  mapDispatchToProps
+);
 
 type QuestionPageProps = ConnectedProps<typeof connector> & {
   history: History;
 };
 
-const QuestionPage: React.FC<QuestionPageProps> = (props) => {
+const QuestionPage: React.FC<QuestionPageProps> = props => {
   const { scoreboard, setScoreboard, setStatus } = props;
 
-  useEffect(() => {
-    socket.on("gameEnd", () => {
-      setStatus(GAME_STATUSES.FINISHED);
-    });
-  }, [setStatus]);
-
-  useEffect(() => {
-    socket.on("updateScores", (payload: any) => {
-      setScoreboard([...payload.scores]);
-    });
-  }, [setScoreboard]);
-
-  useEffect(() => {
-    socket.on("updateScoreboard", (payload: any) => {
-      const currentScores = [...(scoreboard as Player[])];
-      const scores = currentScores.map((player) => {
-        if (player.name === payload.playerName) {
-          return {
-            ...player,
-            score: player.score + 1,
-          };
-        }
-
-        return player;
+  useEffect(
+    () => {
+      socket.on("gameEnd", () => {
+        setStatus(GAME_STATUSES.FINISHED);
       });
+    },
+    [setStatus]
+  );
 
-      // setScoreboard();
-
-      socket.emit("scoreboardUpdated", { scores }, (res: any) => {
-        if (res.code === "success") {
-          return;
-        }
-
-        console.log("Errore scoreboardUpdated:", res);
+  useEffect(
+    () => {
+      socket.on("updateScores", (payload: any) => {
+        setScoreboard([...payload.scores]);
       });
-    });
-  }, [scoreboard]);
+    },
+    [setScoreboard]
+  );
+
+  useEffect(
+    () => {
+      socket.on("updateScoreboard", (payload: any) => {
+        const currentScores = [...(scoreboard as Player[])];
+        const scores = currentScores.map(player => {
+          if (player.name === payload.playerName) {
+            return {
+              ...player,
+              score: player.score + 1
+            };
+          }
+
+          return player;
+        });
+
+        // setScoreboard();
+
+        socket.emit("scoreboardUpdated", { scores }, (res: any) => {
+          if (res.code === "success") {
+            return;
+          }
+
+          console.log("Errore scoreboardUpdated:", res);
+        });
+      });
+    },
+    [scoreboard]
+  );
 
   const handleReset = () => {
     socket.disconnect();
@@ -88,7 +100,7 @@ const QuestionPage: React.FC<QuestionPageProps> = (props) => {
   const getWinner = () =>
     (props.scoreboard as Player[]).reduce((max: Player, player: Player) => (max.score > player.score ? max : player), {
       name: "",
-      score: 0,
+      score: 0
     }).name;
 
   return (

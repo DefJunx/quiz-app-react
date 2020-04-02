@@ -55,7 +55,7 @@ const QuestionPage: React.FC<QuestionPageProps> = (props) => {
       const toUpdateIdx = newScores.findIndex((el) => el.name === payload.playerName);
       newScores[toUpdateIdx].score = newScores[toUpdateIdx].score + 1;
 
-      console.log("newScores:", newScores);
+      Debug.Log("newScores:", newScores);
 
       setScoreboard(newScores);
 

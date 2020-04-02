@@ -1,4 +1,4 @@
-import React, { useState, FormEvent, ChangeEvent, MouseEvent, useEffect } from "react";
+import React, { useState, FormEvent, ChangeEvent, MouseEvent, useEffect, useCallback } from "react";
 import { connect, ConnectedProps } from "react-redux";
 
 import { setStatus } from "../actions/game";
@@ -8,15 +8,12 @@ import { socket } from "..";
 const mapStateToProps = (state: any) => ({
   type: state.type,
   status: state.game.status,
-  room: state.game.room
+  room: state.game.room,
 });
 const mapDispatchToProps = (dispatch: any) => ({
-  setStatus: (status: GAME_STATUSES) => dispatch(setStatus(status))
+  setStatus: (status: GAME_STATUSES) => dispatch(setStatus(status)),
 });
-const connector = connect(
-  mapStateToProps,
-  mapDispatchToProps
-);
+const connector = connect(mapStateToProps, mapDispatchToProps);
 
 type HostQuestionPageProps = ConnectedProps<typeof connector>;
 
@@ -25,45 +22,44 @@ interface Answer {
   isCorrectAnswer: boolean;
 }
 
-const HostQuestionPage: React.FC<HostQuestionPageProps> = props => {
+const HostQuestionPage: React.FC<HostQuestionPageProps> = (props) => {
   const defaultAnswer: Answer = {
     answerText: "",
-    isCorrectAnswer: false
+    isCorrectAnswer: false,
   };
   const defaultPageState = {
     waitingPlayers: false,
     question: "",
     answers: [{ ...defaultAnswer, isCorrectAnswer: true }, defaultAnswer],
-    error: ""
+    error: "",
   };
 
   const [pageState, setPageState] = useState(defaultPageState);
 
-  useEffect(
-    () => {
-      socket.on("proceedGame", () => {
-        setPageState({ ...defaultPageState });
-      });
+  const resetPageState = useCallback(
+    (payload?: any) => {
+      setPageState({ ...defaultPageState });
     },
     [defaultPageState]
   );
 
-  useEffect(
-    () => {
-      socket.on("nooneAnswered", () => {
-        alert("No player answered the question! send an easier one ;)");
+  useEffect(() => {
+    socket.on("proceedGame", resetPageState);
+  }, []);
 
-        setPageState({ ...defaultPageState });
-      });
-    },
-    [defaultPageState]
-  );
+  useEffect(() => {
+    socket.on("nooneAnswered", () => {
+      alert("No player answered the question! send an easier one ;)");
+
+      resetPageState();
+    });
+  }, []);
 
   const onQuestionChange = (e: ChangeEvent<HTMLInputElement>) => {
     const question = e.target.value;
     setPageState({
       ...pageState,
-      question
+      question,
     });
   };
 
@@ -78,7 +74,7 @@ const HostQuestionPage: React.FC<HostQuestionPageProps> = props => {
 
     setPageState({
       ...pageState,
-      answers
+      answers,
     });
   };
 
@@ -93,7 +89,7 @@ const HostQuestionPage: React.FC<HostQuestionPageProps> = props => {
 
     setPageState({
       ...pageState,
-      answers
+      answers,
     });
   };
 
@@ -119,13 +115,13 @@ const HostQuestionPage: React.FC<HostQuestionPageProps> = props => {
 
     setPageState({
       ...pageState,
-      error: ""
+      error: "",
     });
 
     if (pageState.question === "") {
       setPageState({
         ...pageState,
-        error: "Please enter a question."
+        error: "Please enter a question.",
       });
       return;
     }
@@ -133,17 +129,17 @@ const HostQuestionPage: React.FC<HostQuestionPageProps> = props => {
     if (pageState.answers.length < 2) {
       setPageState({
         ...pageState,
-        error: "Please enter at least two answers."
+        error: "Please enter at least two answers.",
       });
       return;
     }
 
-    const correctAnswers = pageState.answers.filter(answer => answer.isCorrectAnswer === true);
+    const correctAnswers = pageState.answers.filter((answer) => answer.isCorrectAnswer === true);
 
     if (correctAnswers.length !== 1) {
       setPageState({
         ...pageState,
-        error: "invalid number of correct answers."
+        error: "invalid number of correct answers.",
       });
       return;
     }
@@ -155,14 +151,14 @@ const HostQuestionPage: React.FC<HostQuestionPageProps> = props => {
         console.log("sendQuestion success");
         setPageState({
           ...defaultPageState,
-          waitingPlayers: true
+          waitingPlayers: true,
         });
         return;
       }
 
       setPageState({
         ...defaultPageState,
-        error: "Error in sending question, please try again"
+        error: "Error in sending question, please try again",
       });
     });
   };
@@ -173,7 +169,12 @@ const HostQuestionPage: React.FC<HostQuestionPageProps> = props => {
         <h2>Waiting for players to answer...</h2>
       ) : (
         <>
-          <button style={{ marginBottom: "40px" }} className="button is-primary" type="button" onClick={e => endGame()}>
+          <button
+            style={{ marginBottom: "40px" }}
+            className="button is-primary"
+            type="button"
+            onClick={(e) => endGame()}
+          >
             End Game
           </button>
           <h2 className="has-text-centered">Ask a question!</h2>
@@ -195,7 +196,7 @@ const HostQuestionPage: React.FC<HostQuestionPageProps> = props => {
                         type="text"
                         className="input"
                         value={answer.answerText}
-                        onChange={e => onAnswerChange(e, idx)}
+                        onChange={(e) => onAnswerChange(e, idx)}
                       />
                     </div>
                   </div>

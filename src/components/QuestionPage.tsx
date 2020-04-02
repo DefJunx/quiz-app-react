@@ -13,6 +13,7 @@ import { CLIENT_TYPES } from "../reducers/clientType";
 import HostQuestionPage from "./HostQuestionPage";
 import PlayerQuestionPage from "./PlayerQuestionPage";
 import { GAME_STATUSES } from "../reducers/game";
+import Debug from "../utils/debug";
 
 const mapStateToProps = (state: any) => ({
   type: state.type,
@@ -43,32 +44,27 @@ const QuestionPage: React.FC<QuestionPageProps> = (props) => {
   }, [setStatus]);
   const updateScoresCallback = useCallback(
     (payload) => {
-      setScoreboard([...payload.scores]);
+      Debug.Log("updateScoresCallback payload.scores:", payload);
+      setScoreboard(payload.scores);
     },
     [setScoreboard]
   );
   const updateScoreboardCallback = useCallback(
     (payload: any) => {
-      const currentScores = [...(scoreboard as Player[])];
-      const scores = currentScores.map((player) => {
-        if (player.name === payload.playerName) {
-          return {
-            ...player,
-            score: player.score + 1,
-          };
-        }
+      const newScores: Player[] = [...scoreboard];
+      const toUpdateIdx = newScores.findIndex((el) => el.name === payload.playerName);
+      newScores[toUpdateIdx].score = newScores[toUpdateIdx].score + 1;
 
-        return player;
-      });
+      console.log("newScores:", newScores);
 
-      // setScoreboard();
+      setScoreboard(newScores);
 
-      socket.emit("scoreboardUpdated", { scores }, (res: any) => {
+      socket.emit("scoreboardUpdated", { scores: newScores }, (res: any) => {
         if (res.code === "success") {
           return;
         }
 
-        console.log("Errore scoreboardUpdated:", res);
+        Debug.Log("Errore scoreboardUpdated:", res);
       });
     },
     [scoreboard]

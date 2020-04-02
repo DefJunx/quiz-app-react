@@ -4,6 +4,7 @@ import { connect, ConnectedProps } from "react-redux";
 import { setStatus } from "../actions/game";
 import { GAME_STATUSES } from "../reducers/game";
 import { socket } from "..";
+import Debug from "../utils/debug";
 
 const mapStateToProps = (state: any) => ({
   type: state.type,
@@ -112,7 +113,7 @@ const HostQuestionPage: React.FC<HostQuestionPageProps> = (props) => {
         return;
       }
 
-      console.log("Error gameEnded emit");
+      Debug.Log("Error gameEnded emit");
     });
   };
 
@@ -150,11 +151,8 @@ const HostQuestionPage: React.FC<HostQuestionPageProps> = (props) => {
       return;
     }
 
-    console.log("sending question: ", pageState);
-
     socket.emit("sendQuestion", { questionText: pageState.question, answers: pageState.answers }, (res: any) => {
       if (res.code === "success") {
-        console.log("sendQuestion success");
         setPageState({
           ...defaultPageState,
           waitingPlayers: true,

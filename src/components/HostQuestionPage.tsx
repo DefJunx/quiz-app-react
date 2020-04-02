@@ -45,14 +45,21 @@ const HostQuestionPage: React.FC<HostQuestionPageProps> = (props) => {
 
   useEffect(() => {
     socket.on("proceedGame", resetPageState);
-  }, []);
 
+    return () => {
+      socket.off("proceedGame");
+    };
+  }, []);
   useEffect(() => {
     socket.on("nooneAnswered", () => {
       alert("No player answered the question! send an easier one ;)");
 
       resetPageState();
     });
+
+    return () => {
+      socket.off("nooneAnswered");
+    };
   }, []);
 
   const onQuestionChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -62,7 +69,6 @@ const HostQuestionPage: React.FC<HostQuestionPageProps> = (props) => {
       question,
     });
   };
-
   const onAnswerChange = (e: ChangeEvent<HTMLInputElement>, answerIndex: number) => {
     const answers: Answer[] = pageState.answers.map((answer, idx) => {
       if (idx === answerIndex) {

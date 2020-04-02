@@ -76,12 +76,24 @@ const QuestionPage: React.FC<QuestionPageProps> = (props) => {
 
   useEffect(() => {
     socket.on("gameEnd", gameEndCallback);
+
+    return () => {
+      socket.off("gameEnd");
+    };
   }, []);
   useEffect(() => {
     socket.on("updateScores", updateScoresCallback);
+
+    return () => {
+      socket.off("updateScores");
+    };
   }, []);
   useEffect(() => {
     socket.on("updateScoreboard", updateScoreboardCallback);
+
+    return () => {
+      socket.off("updateScoreboard");
+    };
   }, []);
 
   const handleReset = () => {

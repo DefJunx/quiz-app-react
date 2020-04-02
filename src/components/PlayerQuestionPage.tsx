@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { GAME_STATUSES } from "../reducers/game";
 import { setStatus } from "../actions/game";
 import { connect, ConnectedProps } from "react-redux";
@@ -7,15 +7,12 @@ import { socket } from "..";
 const mapStateToProps = (state: any) => ({
   type: state.type,
   status: state.game.status,
-  room: state.game.room
+  room: state.game.room,
 });
 const mapDispatchToProps = (dispatch: any) => ({
-  setStatus: (status: GAME_STATUSES) => dispatch(setStatus(status))
+  setStatus: (status: GAME_STATUSES) => dispatch(setStatus(status)),
 });
-const connector = connect(
-  mapStateToProps,
-  mapDispatchToProps
-);
+const connector = connect(mapStateToProps, mapDispatchToProps);
 
 type PlayerQuestionPageProps = ConnectedProps<typeof connector>;
 
@@ -24,7 +21,7 @@ interface PlayerAnswer {
   answerId: string;
 }
 
-const PlayerQuestionPage: React.FC<PlayerQuestionPageProps> = props => {
+const PlayerQuestionPage: React.FC<PlayerQuestionPageProps> = (props) => {
   const defaultPageState = {
     socketId: socket.id,
     canAnswer: true,
@@ -34,72 +31,108 @@ const PlayerQuestionPage: React.FC<PlayerQuestionPageProps> = props => {
     error: "",
     usernameAnswering: "",
     failedAnswer: "",
-    genericMessage: ""
+    genericMessage: "",
   };
 
   const [pageState, setPageState] = useState({ ...defaultPageState });
 
-  // TODO: Notificare che è finita la partita? Poveracci
+  const resetPageState = useCallback(() => {
+    setPageState({ ...defaultPageState });
+  }, [defaultPageState]);
+  const answerResultCallback = useCallback(
+    (payload: any) => {
+      const { playerId, status, success } = payload;
+      const isSamePlayer = pageState.socketId === playerId;
 
-  useEffect(
-    () => {
-      socket.on("proceedGame", () => {
-        setPageState({ ...defaultPageState });
-      });
-    },
-    [defaultPageState]
-  );
+      if (pageState.failedAnswer !== "") {
+        return;
+      }
 
-  useEffect(
-    () => {
-      socket.on("nooneAnswered", () => {
-        setPageState(state => ({
+      setPageState((state) => ({
+        ...state,
+        canAnswer: true,
+        hasQueuedForAnswering: false,
+        usernameAnswering: "",
+      }));
+
+      if (success) {
+        setPageState((state) => ({
           ...state,
-          usernameAnswering: "",
-          failedAnswer: "Noone answered! New question coming soon",
-          canAnswer: false
+          canAnswer: false,
         }));
 
-        setTimeout(() => {
-          setPageState({ ...defaultPageState });
-        }, 3 * 1000);
-      });
-
-      return () => {
-        socket.off("nooneAnswered");
-      };
+        if (isSamePlayer) {
+          setPageState((state) => ({
+            ...state,
+            genericMessage: "Your answer is correct! You got one point.",
+          }));
+        } else {
+          setPageState((state) => ({
+            ...state,
+            genericMessage: `'${
+              payload.playerName || "Someone else"
+            }' answered correctly! Better luck next question ;)`,
+          }));
+        }
+      } else {
+        if (isSamePlayer) {
+          setPageState((state) => ({
+            ...state,
+            canAnswer: false,
+            hasQueuedForAnswering: false,
+            failedAnswer: status,
+          }));
+        }
+      }
     },
-    [defaultPageState]
-  );
-
-  useEffect(
-    () => {
-      socket.on("newQuestion", (payload: { questionText: string; answers: PlayerAnswer[] }) => {
-        setPageState({ ...defaultPageState });
-
-        setPageState(state => ({
-          ...state,
-          questionText: payload.questionText,
-          answers: payload.answers,
-          canAnswer: true,
-          hasQueuedForAnswering: false
-        }));
-
-        return () => {
-          socket.off("newQuestion");
-        };
-      });
-    },
-    [defaultPageState]
+    [pageState.failedAnswer]
   );
 
   useEffect(() => {
+    socket.on("proceedGame", resetPageState);
+  }, []);
+  useEffect(() => {
+    socket.on("nooneAnswered", () => {
+      setPageState((state) => ({
+        ...state,
+        usernameAnswering: "",
+        failedAnswer: "Noone answered! New question coming soon",
+        canAnswer: false,
+      }));
+
+      setTimeout(() => {
+        resetPageState();
+      }, 3 * 1000);
+    });
+
+    return () => {
+      socket.off("nooneAnswered");
+    };
+  }, []);
+  useEffect(() => {
+    socket.on("newQuestion", (payload: { questionText: string; answers: PlayerAnswer[] }) => {
+      resetPageState();
+
+      setPageState((state) => ({
+        ...state,
+        questionText: payload.questionText,
+        answers: payload.answers,
+        canAnswer: true,
+        hasQueuedForAnswering: false,
+      }));
+
+      return () => {
+        socket.off("newQuestion");
+      };
+    });
+  }, []);
+  useEffect(() => {
     socket.on("playerAnswering", (payload: any) => {
-      setPageState(state => ({
+      setPageState((state) => ({
         ...state,
         canAnswer: false,
         hasQueuedForAnswering: true,
-        usernameAnswering: payload.username
+        usernameAnswering: payload.username,
       }));
     });
 
@@ -107,87 +140,39 @@ const PlayerQuestionPage: React.FC<PlayerQuestionPageProps> = props => {
       socket.off("playerAnswering");
     };
   }, []);
+  useEffect(() => {
+    socket.on("answerResult", answerResultCallback);
 
-  useEffect(
-    () => {
-      socket.on("answerResult", (payload: any) => {
-        const { playerId, status, success } = payload;
-        const isSamePlayer = pageState.socketId === playerId;
-
-        if (pageState.failedAnswer !== "") {
-          return;
-        }
-
-        setPageState(state => ({
-          ...state,
-          canAnswer: true,
-          hasQueuedForAnswering: false,
-          usernameAnswering: ""
-        }));
-
-        if (success) {
-          setPageState(state => ({
-            ...state,
-            canAnswer: false
-          }));
-
-          if (isSamePlayer) {
-            setPageState(state => ({
-              ...state,
-              genericMessage: "Your answer is correct! You got one point."
-            }));
-          } else {
-            setPageState(state => ({
-              ...state,
-              genericMessage: `'${payload.playerName ||
-                "Someone else"}' answered correctly! Better luck next question ;)`
-            }));
-          }
-        } else {
-          if (isSamePlayer) {
-            setPageState(state => ({
-              ...state,
-              canAnswer: false,
-              hasQueuedForAnswering: false,
-              failedAnswer: status
-            }));
-          }
-        }
-      });
-
-      return () => {
-        socket.off("answerResult");
-      };
-    },
-    [pageState.failedAnswer, pageState.socketId]
-  );
+    return () => {
+      socket.off("answerResult");
+    };
+  }, []);
 
   const onAnswerQueued = () => {
     socket.emit("queueForAnswer", { roomName: props.room }, (res: any) => {
       if (res.code === "success") {
-        setPageState(state => ({
+        setPageState((state) => ({
           ...state,
-          hasQueuedForAnswering: true
+          hasQueuedForAnswering: true,
         }));
         return;
       }
 
-      setPageState(state => ({ ...state, error: "There was an error queueing up for an answer. Try again!" }));
+      setPageState((state) => ({ ...state, error: "There was an error queueing up for an answer. Try again!" }));
     });
   };
-
   const onAnswerSelected = (answerId: string) => {
     socket.emit("sendAnswer", { answerId, roomName: props.room }, (res: any) => {
       if (res.code === "success") {
-        setPageState(state => ({
+        setPageState((state) => ({
           ...state,
           hasQueuedForAnswering: false,
-          canAnswer: false
+          canAnswer: false,
         }));
         return;
       }
 
-      setPageState(state => ({ ...state, error: "There was an error queueing up for an answer. Try again!" }));
+      setPageState((state) => ({ ...state, error: "There was an error queueing up for an answer. Try again!" }));
     });
   };
 
